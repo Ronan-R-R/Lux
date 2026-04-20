@@ -56,3 +56,5 @@ sql.txt
 raw_pdf_text.txt
 test_pdf.dart
 .env
+
+*.apk

@@ -29,7 +29,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        String msg = e.toString();
+        if (msg.contains('SocketException') || msg.contains('Failed host lookup') || msg.contains('AuthRetryableFetchException')) {
+          msg = 'Network error: Please check your internet connection.';
+        } else if (msg.contains('AuthException')) {
+          final match = RegExp(r'message:\s*([^,)]+)').firstMatch(msg);
+          msg = match != null ? match.group(1)?.trim() ?? 'Registration failed.' : 'Registration failed. Please check your details.';
+        } else {
+          msg = 'An unexpected error occurred. Please try again.';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(msg),
+          backgroundColor: Colors.redAccent,
+        ));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
